@@ -91,4 +91,59 @@ class ProductRepository @Inject constructor(
     suspend fun insertSeedData(products: List<ProductEntity>) {
         productDao.insertAll(products)
     }
+
+    suspend fun deleteProduct(productId: String): Resource<Unit> {
+        return try {
+            productDao.deleteById(productId)
+            Resource.success(Unit)
+        } catch (e: Exception) {
+            Resource.error("删除商品失败: ${e.message}", e)
+        }
+    }
+
+    suspend fun addProduct(product: Product): Resource<Product> {
+        return try {
+            val entity = ProductEntity(
+                id = product.id,
+                name = product.name,
+                artist = product.artist,
+                genre = product.genre,
+                price = product.price,
+                description = product.description,
+                imageUrl = product.imageUrl,
+                rating = product.rating,
+                stock = product.stock,
+                releaseDate = product.releaseDate,
+                isFeatured = product.isFeatured,
+                isNew = product.isNew
+            )
+            productDao.insert(entity)
+            Resource.success(product)
+        } catch (e: Exception) {
+            Resource.error("添加商品失败: ${e.message}", e)
+        }
+    }
+
+    suspend fun updateProduct(product: Product): Resource<Product> {
+        return try {
+            val entity = ProductEntity(
+                id = product.id,
+                name = product.name,
+                artist = product.artist,
+                genre = product.genre,
+                price = product.price,
+                description = product.description,
+                imageUrl = product.imageUrl,
+                rating = product.rating,
+                stock = product.stock,
+                releaseDate = product.releaseDate,
+                isFeatured = product.isFeatured,
+                isNew = product.isNew
+            )
+            productDao.update(entity)
+            Resource.success(product)
+        } catch (e: Exception) {
+            Resource.error("更新商品失败: ${e.message}", e)
+        }
+    }
 }

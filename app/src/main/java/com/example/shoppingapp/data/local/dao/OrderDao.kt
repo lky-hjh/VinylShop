@@ -1,6 +1,7 @@
 package com.example.shoppingapp.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -48,4 +49,17 @@ interface OrderDao {
 
     @Query("UPDATE orders SET status = :status WHERE id = :orderId")
     suspend fun updateOrderStatus(orderId: String, status: String)
+
+    @Delete
+    suspend fun deleteOrder(order: OrderEntity)
+
+    @Query("DELETE FROM order_items WHERE orderId = :orderId")
+    suspend fun deleteOrderItemsByOrderId(orderId: String)
+
+    @Transaction
+    suspend fun deleteOrderWithItems(orderId: String) {
+        deleteOrderItemsByOrderId(orderId)
+        val order = getOrderById(orderId) ?: return
+        deleteOrder(order)
+    }
 }

@@ -14,6 +14,7 @@ object Routes {
     const val PRODUCT_DETAIL = "product_detail/{productId}"
     const val CHECKOUT = "checkout"
     const val ORDER_DETAIL = "order_detail/{orderId}"
+    const val ADMIN = "admin"
 
     fun productDetail(productId: String) = "product_detail/$productId"
     fun orderDetail(orderId: String) = "order_detail/$orderId"
@@ -67,6 +68,9 @@ fun AppNavHost(
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onAdminClick = {
+                    navController.navigate(Routes.ADMIN)
                 }
             )
         }
@@ -100,6 +104,12 @@ fun AppNavHost(
             val orderId = backStackEntry.arguments?.getString("orderId") ?: return@composable
             com.example.shoppingapp.ui.order.OrderDetailScreen(
                 orderId = orderId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.ADMIN) {
+            com.example.shoppingapp.ui.admin.AdminScreen(
                 onBackClick = { navController.popBackStack() }
             )
         }

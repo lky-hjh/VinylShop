@@ -8,10 +8,9 @@ import com.example.shoppingapp.data.local.entity.UserEntity
 import com.example.shoppingapp.data.local.entity.UserRole
 import com.example.shoppingapp.util.PasswordUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,11 +21,11 @@ class SeedDataProvider @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    fun seedIfNeeded() {
+    suspend fun seedIfNeeded() {
         val prefs = context.getSharedPreferences("vinylshop_prefs", Context.MODE_PRIVATE)
         if (prefs.getBoolean("seed_data_inserted", false)) return
 
-        CoroutineScope(Dispatchers.IO).launch {
+        withContext(Dispatchers.IO) {
             try {
                 val existing = productDao.getAllProducts().first()
                 if (existing.isEmpty()) {
@@ -50,10 +49,39 @@ class SeedDataProvider @Inject constructor(
                     )
                 }
 
+                // Seed mock third-party users (for demo / 考核展示)
+                seedThirdPartyUser(userDao, "wechat_mock", "微信用户", "wechat@mock.com")
+                seedThirdPartyUser(userDao, "qq_mock", "QQ用户", "qq@mock.com")
+
                 prefs.edit().putBoolean("seed_data_inserted", true).apply()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    /**
+     * 为第三方登录创建 mock 用户（若不存在）
+     */
+    private suspend fun seedThirdPartyUser(
+        userDao: UserDao,
+        username: String,
+        displayName: String,
+        email: String
+    ) {
+        if (userDao.getUserByUsername(username) == null) {
+            val hashed = com.example.shoppingapp.util.PasswordUtils.hash("mock123")
+            userDao.insert(
+                com.example.shoppingapp.data.local.entity.UserEntity(
+                    id = "user_${username}_001",
+                    username = username,
+                    email = email,
+                    password = hashed,
+                    phone = "",
+                    address = "",
+                    role = com.example.shoppingapp.data.local.entity.UserRole.USER
+                )
+            )
         }
     }
 

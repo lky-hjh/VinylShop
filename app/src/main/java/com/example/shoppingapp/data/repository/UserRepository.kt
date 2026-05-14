@@ -90,4 +90,13 @@ class UserRepository @Inject constructor(
             Resource.error("更新用户信息失败: ${e.message}", e)
         }
     }
+
+    suspend fun deleteUser(userId: String): Resource<Unit> {
+        return try {
+            userDao.deleteById(userId)
+            Resource.success(Unit)
+        } catch (e: Exception) {
+            Resource.error("删除用户失败: ${e.message}", e)
+        }
+    }
 }

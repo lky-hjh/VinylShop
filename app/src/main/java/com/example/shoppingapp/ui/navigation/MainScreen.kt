@@ -45,7 +45,8 @@ fun MainScreen(
     onProductClick: (String) -> Unit,
     onCheckoutClick: () -> Unit,
     onOrderClick: (String) -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onAdminClick: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableStateOf(0) }
     val cartViewModel: CartViewModel = hiltViewModel()
@@ -111,6 +112,7 @@ fun MainScreen(
                     onCheckoutClick = onCheckoutClick,
                     onOrderClick = onOrderClick,
                     onLogout = onLogout,
+                    onAdminClick = onAdminClick,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -157,6 +159,7 @@ fun MainScreen(
                     onCheckoutClick = onCheckoutClick,
                     onOrderClick = onOrderClick,
                     onLogout = onLogout,
+                    onAdminClick = onAdminClick,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -172,6 +175,7 @@ private fun MainContent(
     onCheckoutClick: () -> Unit,
     onOrderClick: (String) -> Unit,
     onLogout: () -> Unit,
+    onAdminClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     // 内容区域 — 使用 contentMaxWidth 限制最大宽度
@@ -199,6 +203,7 @@ private fun MainContent(
             )
             4 -> ProfileScreen(
                 onLogout = onLogout,
+                onAdminClick = onAdminClick,
                 modifier = Modifier.fillMaxSize()
             )
         }

@@ -131,4 +131,13 @@ class OrderRepository @Inject constructor(
             Resource.error("更新订单状态失败: ${e.message}", e)
         }
     }
+
+    suspend fun deleteOrder(orderId: String): Resource<Unit> {
+        return try {
+            orderDao.deleteOrderWithItems(orderId)
+            Resource.success(Unit)
+        } catch (e: Exception) {
+            Resource.error("删除订单失败: ${e.message}", e)
+        }
+    }
 }
