@@ -13,6 +13,9 @@ local.properties
 app/build/
 app/release/
 
+# Keystore (do not commit)
+*.jks
+
 # OS files
 Thumbs.db
 *.swp
