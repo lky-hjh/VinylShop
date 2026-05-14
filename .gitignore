@@ -1,0 +1,29 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# App build output
+app/build/
+app/release/
+
+# OS files
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Kotlin compiler errors
+.kotlin/
+
+# WorkBuddy internal config
+.workbuddy/
+
+# Gradle wrapper binary
+gradle/wrapper/gradle-wrapper.jar
