@@ -2,7 +2,11 @@ package com.example.shoppingapp.data.seed
 
 import android.content.Context
 import com.example.shoppingapp.data.local.dao.ProductDao
+import com.example.shoppingapp.data.local.dao.UserDao
 import com.example.shoppingapp.data.local.entity.ProductEntity
+import com.example.shoppingapp.data.local.entity.UserEntity
+import com.example.shoppingapp.data.local.entity.UserRole
+import com.example.shoppingapp.util.PasswordUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class SeedDataProvider @Inject constructor(
     private val productDao: ProductDao,
+    private val userDao: UserDao,
     @ApplicationContext private val context: Context
 ) {
 
@@ -27,6 +32,24 @@ class SeedDataProvider @Inject constructor(
                 if (existing.isEmpty()) {
                     productDao.insertAll(VINYL_RECORDS)
                 }
+
+                // Seed default admin user
+                val adminUser = userDao.getUserByUsername("admin")
+                if (adminUser == null) {
+                    val hashedPassword = PasswordUtils.hash("admin123")
+                    userDao.insert(
+                        UserEntity(
+                            id = "user_admin_001",
+                            username = "admin",
+                            email = "admin@vinylshop.com",
+                            password = hashedPassword,
+                            role = UserRole.ADMIN,
+                            phone = "13800000000",
+                            address = "管理员地址"
+                        )
+                    )
+                }
+
                 prefs.edit().putBoolean("seed_data_inserted", true).apply()
             } catch (e: Exception) {
                 e.printStackTrace()

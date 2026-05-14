@@ -4,6 +4,7 @@ import com.example.shoppingapp.data.local.dao.UserDao
 import com.example.shoppingapp.data.local.entity.UserEntity
 import com.example.shoppingapp.domain.model.User
 import com.example.shoppingapp.domain.model.toUser
+import com.example.shoppingapp.util.PasswordUtils
 import com.example.shoppingapp.util.Resource
 import com.example.shoppingapp.util.generateUUID
 import kotlinx.coroutines.flow.Flow
@@ -17,9 +18,12 @@ class UserRepository @Inject constructor(
 ) {
     suspend fun login(username: String, password: String): Resource<User> {
         return try {
-            val entity = userDao.login(username, password)
-            if (entity != null) Resource.success(entity.toUser())
-            else Resource.error("用户名或密码错误")
+            val userEntity = userDao.getUserByUsername(username)
+            if (userEntity != null && PasswordUtils.verify(password, userEntity.password)) {
+                Resource.success(userEntity.toUser())
+            } else {
+                Resource.error("用户名或密码错误")
+            }
         } catch (e: Exception) {
             Resource.error("登录失败: ${e.message}", e)
         }
@@ -36,11 +40,12 @@ class UserRepository @Inject constructor(
                 return Resource.error("邮箱已被注册")
             }
 
+            val hashedPassword = PasswordUtils.hash(password)
             val user = UserEntity(
                 id = generateUUID(),
                 username = username,
                 email = email,
-                password = password
+                password = hashedPassword
             )
             userDao.insert(user)
             Resource.success(user.toUser())
@@ -76,6 +81,7 @@ class UserRepository @Inject constructor(
                     phone = user.phone,
                     avatar = user.avatar,
                     address = user.address,
+                    role = user.role,
                     createdAt = user.createdAt
                 )
             )

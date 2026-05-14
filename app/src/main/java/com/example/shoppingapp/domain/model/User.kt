@@ -1,6 +1,7 @@
 package com.example.shoppingapp.domain.model
 
 import com.example.shoppingapp.data.local.entity.UserEntity
+import com.example.shoppingapp.data.local.entity.UserRole
 
 data class User(
     val id: String,
@@ -10,8 +11,11 @@ data class User(
     val phone: String,
     val avatar: String,
     val address: String,
+    val role: String = UserRole.USER,
     val createdAt: Long
-)
+) {
+    val isAdmin: Boolean get() = role == UserRole.ADMIN
+}
 
 fun UserEntity.toUser(): User = User(
     id = id,
@@ -21,5 +25,6 @@ fun UserEntity.toUser(): User = User(
     phone = phone,
     avatar = avatar,
     address = address,
+    role = role,
     createdAt = createdAt
 )

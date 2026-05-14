@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Fragment 列表页：使用 RecyclerView 展示商品列表
+    演示传统 Android 控件 (RecyclerView) 的使用
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.legacy.ProductListFragment">
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="黑胶唱片列表 (传统布局)"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:padding="16dp"
+        android:background="#FFFFFF" />
+
+    <!-- 搜索框 (EditText) -->
+    <EditText
+        android:id="@+id/et_search"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="12dp"
+        android:hint="搜索唱片名称..."
+        android:paddingHorizontal="16dp"
+        android:background="@drawable/bg_search_input"
+        android:textSize="14sp"
+        android:inputType="text"
+        android:drawablePadding="8dp" />
+
+    <!-- RecyclerView 列表 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_product_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="8dp" />
+
+</LinearLayout>

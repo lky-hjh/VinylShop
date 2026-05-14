@@ -1,5 +1,7 @@
 package com.example.shoppingapp.ui.profile
 
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,11 +13,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -26,6 +30,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,6 +59,7 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val userState by viewModel.userState.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
 
@@ -99,7 +105,11 @@ fun ProfileScreen(
                 if (user != null) {
                     ProfileContent(
                         user = user,
-                        onLogoutClick = { showLogoutDialog = true }
+                        onLogoutClick = { showLogoutDialog = true },
+                        onOpenLegacyDemo = {
+                            val intent = Intent(context, com.example.shoppingapp.LegacyDemoActivity::class.java)
+                            context.startActivity(intent)
+                        }
                     )
                 }
             }
@@ -111,7 +121,8 @@ fun ProfileScreen(
 @Composable
 private fun ProfileContent(
     user: User,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onOpenLegacyDemo: () -> Unit = {}
 ) {
     // Header
     Column(
@@ -133,11 +144,33 @@ private fun ProfileContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = user.username,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
+        // 用户名 + 角色徽章
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = user.username,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Surface(
+                shape = RoundedCornerShape(4.dp),
+                color = if (user.isAdmin)
+                    MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f)
+                else
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            ) {
+                Text(
+                    text = if (user.isAdmin) "管理员" else "普通用户",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (user.isAdmin)
+                        MaterialTheme.colorScheme.tertiary
+                    else
+                        MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -189,6 +222,28 @@ private fun ProfileContent(
             icon = Icons.Filled.Receipt,
             label = "注册时间",
             value = user.createdAt.toDateString("yyyy-MM-dd")
+        )
+    }
+
+    HorizontalDivider()
+
+    // Legacy Demo 入口（展示传统 Fragment + XML 用法）
+    TextButton(
+        onClick = onOpenLegacyDemo,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+    ) {
+        Icon(
+            Icons.Filled.Code,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            "传统布局演示 (Fragment + XML)",
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleSmall
         )
     }
 

@@ -17,9 +17,6 @@ interface UserDao {
     @Update
     suspend fun update(user: UserEntity)
 
-    @Query("SELECT * FROM users WHERE username = :username AND password = :password LIMIT 1")
-    suspend fun login(username: String, password: String): UserEntity?
-
     @Query("SELECT * FROM users WHERE id = :userId LIMIT 1")
     suspend fun getUserById(userId: String): UserEntity?
 
