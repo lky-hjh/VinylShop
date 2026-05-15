@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.shoppingapp"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.shoppingapp"
@@ -32,7 +32,12 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
+            // ✅ 仅当 keystore 文件存在时才使用签名配置
+            signingConfig = if (file("release.jks").exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
