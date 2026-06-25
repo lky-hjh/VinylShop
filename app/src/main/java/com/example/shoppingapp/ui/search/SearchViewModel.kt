@@ -65,6 +65,21 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    /** 仅按流派搜索（首页流派标签跳转时使用） */
+    fun searchByGenre(genre: String) {
+        _selectedGenre.value = genre
+        viewModelScope.launch {
+            productRepository.searchProductsWithFilter(
+                query = "",
+                genre = genre,
+                minPrice = 0.0,
+                maxPrice = 99999.0
+            ).collect {
+                _searchResults.value = it
+            }
+        }
+    }
+
     private fun performSearch() {
         val query = _searchQuery.value
         val genre = _selectedGenre.value

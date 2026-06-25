@@ -49,6 +49,8 @@ fun MainScreen(
     onAdminClick: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableStateOf(0) }
+    // 跨 tab 传递流派筛选：首页点流派 → 切到搜索tab时带上 genre
+    var pendingGenre by remember { mutableStateOf<String?>(null) }
     val cartViewModel: CartViewModel = hiltViewModel()
     val cartCount by cartViewModel.cartCount.collectAsState()
 
@@ -113,6 +115,11 @@ fun MainScreen(
                     onOrderClick = onOrderClick,
                     onLogout = onLogout,
                     onAdminClick = onAdminClick,
+                    pendingGenre = pendingGenre,
+                    onGenreClick = { genre ->
+                        pendingGenre = genre
+                        selectedTab = 1 // 切换到搜索 tab
+                    },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -160,6 +167,11 @@ fun MainScreen(
                     onOrderClick = onOrderClick,
                     onLogout = onLogout,
                     onAdminClick = onAdminClick,
+                    pendingGenre = pendingGenre,
+                    onGenreClick = { genre ->
+                        pendingGenre = genre
+                        selectedTab = 1 // 切换到搜索 tab
+                    },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -176,6 +188,8 @@ private fun MainContent(
     onOrderClick: (String) -> Unit,
     onLogout: () -> Unit,
     onAdminClick: () -> Unit = {},
+    pendingGenre: String? = null,
+    onGenreClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     // 内容区域 — 使用 contentMaxWidth 限制最大宽度
@@ -186,10 +200,12 @@ private fun MainContent(
         when (selectedTab) {
             0 -> HomeScreen(
                 onProductClick = onProductClick,
+                onGenreClick = onGenreClick,
                 modifier = Modifier.fillMaxSize()
             )
             1 -> SearchScreen(
                 onProductClick = onProductClick,
+                initialGenre = pendingGenre,
                 modifier = Modifier.fillMaxSize()
             )
             2 -> CartScreen(

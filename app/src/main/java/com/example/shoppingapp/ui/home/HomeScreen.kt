@@ -48,6 +48,7 @@ import com.example.shoppingapp.util.Resource
 @Composable
 fun HomeScreen(
     onProductClick: (String) -> Unit,
+    onGenreClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -77,7 +78,8 @@ fun HomeScreen(
                 is Resource.Loading -> {}
                 is Resource.Success -> GenreChips(
                     genres = state.data,
-                    contentPadding = PaddingValues(horizontal = horizPadding)
+                    contentPadding = PaddingValues(horizontal = horizPadding),
+                    onGenreClick = onGenreClick
                 )
                 else -> {}
             }
@@ -184,7 +186,8 @@ private fun SectionTitle(title: String, modifier: Modifier = Modifier) {
 @Composable
 private fun GenreChips(
     genres: List<String>,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
+    onGenreClick: (String) -> Unit = {}
 ) {
     LazyRow(
         contentPadding = contentPadding,
@@ -193,7 +196,7 @@ private fun GenreChips(
         items(genres.size) { index ->
             FilterChip(
                 selected = false,
-                onClick = { /* Navigate to search with genre filter */ },
+                onClick = { onGenreClick(genres[index]) },
                 label = { Text(genres[index]) }
             )
         }

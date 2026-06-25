@@ -24,8 +24,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,7 @@ import com.example.shoppingapp.util.Resource
 @Composable
 fun SearchScreen(
     onProductClick: (String) -> Unit,
+    initialGenre: String? = null,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
@@ -48,6 +52,13 @@ fun SearchScreen(
     val selectedGenre by viewModel.selectedGenre.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
     val genresState by viewModel.genres.collectAsState()
+
+    // 首页流派标签跳转时，自动按流派筛选
+    LaunchedEffect(initialGenre) {
+        if (initialGenre != null) {
+            viewModel.searchByGenre(initialGenre)
+        }
+    }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val horizPadding = contentHorizontalPadding()
@@ -105,8 +116,11 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Results
+            val hasGenreOnlyResult = remember(searchResults, selectedGenre) {
+                selectedGenre != null && searchResults != null && searchResults !is Resource.Loading
+            }
             when {
-                query.isEmpty() -> {
+                query.isEmpty() && !hasGenreOnlyResult -> {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
